@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Your Macro Results</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+  h1 { color: #333; }
+  .macro { font-size: 1.2em; margin: 10px 0; }
+</style>
+</head>
+<body>
+<h1>Your Personalized Macros</h1>
+<div class="macro" id="calories">Calories: --</div>
+<div class="macro" id="protein">Protein: -- g</div>
+<div class="macro" id="fat">Fat: -- g</div>
+<div class="macro" id="carbs">Carbs: -- g</div>
+
+<script>
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param) || '--';
+  }
+
+  document.getElementById('calories').textContent = 'Calories: ' + getQueryParam('calories');
+  document.getElementById('protein').textContent = 'Protein: ' + getQueryParam('protein') + ' g';
+  document.getElementById('fat').textContent = 'Fat: ' + getQueryParam('fat') + ' g';
+  document.getElementById('carbs').textContent = 'Carbs: ' + getQueryParam('carbs') + ' g';
+</script>
+</body>
+</html>
