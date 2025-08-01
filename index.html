@@ -30,17 +30,3 @@
   </script>
 </body>
 </html>
-<script>
-  // Get URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const calories = urlParams.get('calories');
-  const protein = urlParams.get('protein');
-  const fat = urlParams.get('fat');
-  const carbs = urlParams.get('carbs');
-
-  // Insert values into page elements
-  if (calories) document.getElementById('calories').textContent = calories;
-  if (protein) document.getElementById('protein').textContent = protein;
-  if (fat) document.getElementById('fat').textContent = fat;
-  if (carbs) document.getElementById('carbs').textContent = carbs;
-</script>
