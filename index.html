@@ -18,15 +18,89 @@
   <div class="macro" id="carbs">Carbs: -- g</div>
 
   <script>
+    // Helper to get query param by name
     function getQueryParam(param) {
       const params = new URLSearchParams(window.location.search);
-      return params.get(param) || '--';
+      return params.get(param);
     }
 
-    document.getElementById('calories').textContent = 'Calories: ' + getQueryParam('calories');
-    document.getElementById('protein').textContent = 'Protein: ' + getQueryParam('protein') + ' g';
-    document.getElementById('fat').textContent = 'Fat: ' + getQueryParam('fat') + ' g';
-    document.getElementById('carbs').textContent = 'Carbs: ' + getQueryParam('carbs') + ' g';
+    // Convert lbs to kg
+    function lbsToKg(lbs) {
+      return lbs * 0.453592;
+    }
+
+    // Convert inches to cm
+    function inchesToCm(inches) {
+      return inches * 2.54;
+    }
+
+    // Round number to nearest integer
+    function round(num) {
+      return Math.round(num);
+    }
+
+    // Main calculation function
+    function calculateMacros() {
+      const age = parseInt(getQueryParam('age'));
+      const weightLbs = parseFloat(getQueryParam('weight'));
+      const heightInches = parseFloat(getQueryParam('height'));
+      const gender = getQueryParam('gender') ? getQueryParam('gender').toLowerCase() : 'male';
+      const activity = getQueryParam('activity') ? getQueryParam('activity').toLowerCase() : 'sedentary';
+      const goal = getQueryParam('goal') ? getQueryParam('goal').toLowerCase() : 'maintain';
+
+      if (!age || !weightLbs || !heightInches) {
+        document.body.innerHTML = "<h2>Please submit the form with all required fields.</h2>";
+        return;
+      }
+
+      // Convert units
+      const weightKg = lbsToKg(weightLbs);
+      const heightCm = inchesToCm(heightInches);
+
+      // Calculate BMR (Mifflin-St Jeor)
+      let bmr;
+      if (gender === 'male') {
+        bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + 5;
+      } else {
+        bmr = 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+      }
+
+      // Activity factor mapping
+      let activityFactor = 1.2; // sedentary default
+      if (activity.includes('light')) activityFactor = 1.375;
+      else if (activity.includes('moderate')) activityFactor = 1.55;
+      else if (activity.includes('active')) activityFactor = 1.725;
+      else if (activity.includes('very')) activityFactor = 1.9;
+
+      // Total daily energy expenditure
+      let tdee = bmr * activityFactor;
+
+      // Adjust calories based on goal
+      let calories;
+      if (goal.includes('cut') || goal.includes('lose')) calories = tdee - 500;
+      else if (goal.includes('bulk') || goal.includes('gain')) calories = tdee + 250;
+      else calories = tdee; // maintain
+
+      calories = round(calories);
+
+      // Protein = 1g per lb of bodyweight
+      let protein = round(weightLbs);
+
+      // Fat = 25% of calories, divided by 9 kcal/g
+      let fat = round((calories * 0.25) / 9);
+
+      // Carbs = remainder calories divided by 4 kcal/g
+      let carbs = round((calories - (protein * 4 + fat * 9)) / 4);
+
+      // Update DOM
+      document.getElementById('calories').textContent = `Calories: ${calories}`;
+      document.getElementById('protein').textContent = `Protein: ${protein} g`;
+      document.getElementById('fat').textContent = `Fat: ${fat} g`;
+      document.getElementById('carbs').textContent = `Carbs: ${carbs} g`;
+    }
+
+    // Run calculations on page load
+    calculateMacros();
   </script>
 </body>
 </html>
